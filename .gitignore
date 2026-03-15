@@ -5,3 +5,4 @@ input/*
 output/*
 !input/.gitkeep
 !output/.gitkeep
+database.json
