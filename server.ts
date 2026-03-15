@@ -3,8 +3,8 @@ import { readdir, mkdir, unlink, stat } from "node:fs/promises";
 import { join, extname, basename } from "node:path";
 
 // create new database.json file if it doesn't exist
-if (!Bun.file("database.json").existsSync()) {
-  Bun.write("database.json", "[]");
+if (!(await Bun.file("database.json").exists())) {
+  await Bun.write("database.json", "[]");
 }
 
 const PORT = 3000;
