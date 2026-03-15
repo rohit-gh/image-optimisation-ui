@@ -2,6 +2,11 @@ import sharp from "sharp";
 import { readdir, mkdir, unlink, stat } from "node:fs/promises";
 import { join, extname, basename } from "node:path";
 
+// create new database.json file if it doesn't exist
+if (!Bun.file("database.json").existsSync()) {
+  Bun.write("database.json", "[]");
+}
+
 const PORT = 3000;
 const ROOT = import.meta.dir;
 const INPUT_DIR = join(ROOT, "input");

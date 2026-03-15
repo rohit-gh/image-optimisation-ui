@@ -11,7 +11,6 @@ RUN bun install --production --frozen-lockfile
 # Copy application
 COPY server.ts ./
 COPY public ./public/
-COPY database.json ./
 
 # Create storage directories
 RUN mkdir -p input output
