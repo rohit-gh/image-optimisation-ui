@@ -5,6 +5,3 @@ input/*
 output/*
 !input/.gitkeep
 !output/.gitkeep
-
-# Database resets on fresh deploy
-database.json
