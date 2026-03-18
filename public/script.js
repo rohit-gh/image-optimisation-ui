@@ -17,15 +17,30 @@ let selectedFile = null;
 
 // ── File selection ───────────────────────────────────────────────────────────
 
+const IMAGE_EXTENSIONS = /\.(jpe?g|png|gif|webp|bmp|svg|tiff?|heic|heif|avif)$/i;
+
+function isImageFile(file) {
+  if (file.type.startsWith("image/")) return true;
+  // iOS Safari often returns an empty file.type for HEIC/HEIF photos —
+  // fall back to checking the file extension.
+  if (!file.type && IMAGE_EXTENSIONS.test(file.name)) return true;
+  return false;
+}
+
 function handleFile(file) {
-  if (!file || !file.type.startsWith("image/")) return;
+  if (!file || !isImageFile(file)) return;
   selectedFile = file;
   fileName.textContent = `${file.name} (${formatBytes(file.size)})`;
   optimiseBtn.disabled = false;
   resultSection.hidden = true;
 }
 
-dropZone.addEventListener("click", () => fileInput.click());
+dropZone.addEventListener("click", (e) => {
+  // Avoid double-triggering on iOS: if the click landed on the <label> or
+  // its children the browser already opens the file picker natively.
+  if (e.target.closest('label[for="file-input"]')) return;
+  fileInput.click();
+});
 
 fileInput.addEventListener("change", (e) => {
   handleFile(e.target.files[0]);
