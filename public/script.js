@@ -39,11 +39,33 @@ dropZone.addEventListener("click", (e) => {
   // Avoid double-triggering on iOS: if the click landed on the <label> or
   // its children the browser already opens the file picker natively.
   if (e.target.closest('label[for="file-input"]')) return;
+  // iOS Safari may not fire `change` if the user selects the same file again.
+  // Clearing the value ensures a new selection always triggers.
+  fileInput.value = "";
   fileInput.click();
 });
 
-fileInput.addEventListener("change", (e) => {
-  handleFile(e.target.files[0]);
+function tryHandlePickedFile(attempt = 0) {
+  const file = fileInput.files && fileInput.files[0];
+  if (file) {
+    handleFile(file);
+    return;
+  }
+
+  // iOS Safari can momentarily report an empty FileList right after returning
+  // from the picker. Retry a couple of times on the next frame.
+  if (attempt < 3) {
+    requestAnimationFrame(() => tryHandlePickedFile(attempt + 1));
+  }
+}
+
+fileInput.addEventListener("change", () => {
+  tryHandlePickedFile();
+});
+
+// Some mobile browsers are more reliable with `input` than `change`.
+fileInput.addEventListener("input", () => {
+  tryHandlePickedFile();
 });
 
 dropZone.addEventListener("dragover", (e) => {
